@@ -8,19 +8,6 @@
 #include <errno.h>
 #include <string.h>
 
-enum requete_t {
-    INFO = 1,
-    BLONDEDEMI,
-    BLONDEPINTE,
-    AMBREEDEMI,
-    AMBREEPINTE
-};
-
-struct requete{
-    enum requete_t type_requete;
-    int taille_requete;
-};
-
 int CreerSocket(char* addr, int port) {
     // identifiant de la machine serveur
     struct hostent *serveur_host;
@@ -53,46 +40,29 @@ int CreerSocket(char* addr, int port) {
     return sock;
 }
 
-int traiter(int commande, int sock) {
-    struct requete req;
-    int taille_msg;
+int traiter(int sock) {
+    char* reponse;
     char* message;
-    char* resultat;
-    req.type_requete = commande;
-    req.taille_requete = sizeof(int);
-    taille_msg = sizeof(struct requete) + sizeof(int);
-    message = (char *)malloc(taille_msg);
-    memcpy(message, &req, sizeof(struct requete));
-    memcpy(message + sizeof(struct requete), &commande, sizeof(int));
-    if (write(sock, message, taille_msg) <= 0)
-    {   
-        free(message);
-        return -1;
-    }
-    if (read(sock, &resultat, sizeof(char*)) <= 0)
-    {
-        free(message);
-        return -1;
-    }
-    free(message);
-    //printf('%s', resultat);
+    message=(char *)malloc(50);
+    // la connexion est établie, on attend les données envoyées par le client
+    read(sock, reponse, 100000);
+    // affichage du message reçu
+    printf("%s", reponse);
+    scanf("%s", message);
+    
+    write(sock , message , strlen(message)+1);
     return 1;
 }
 
 int main() {
-    int sock = CreerSocket("localhost", 4080);
-    int commande = 0;
-    struct requete demande;
+    int sock = CreerSocket("localhost", 4444);
     if (sock == -1) {
         perror("Connexion Socket Server\n");
         return 1;
     }
 
     printf("connexion établie");
-
-        printf("Commande : \n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n");
-        scanf("%d", &commande);
-    traiter(commande, sock);
+    traiter(sock);
 
     close(sock);
 }

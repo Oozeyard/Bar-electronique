@@ -1,112 +1,72 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <string.h>
-#include <pthread.h>
-
-enum requete_t {
-    INFO = 1,
-    BLONDEDEMI,
-    BLONDEPINTE,
-    AMBREEDEMI,
-    AMBREEPINTE
-};
-
-struct requete{
-    enum requete_t type_requete;
-    int taille_requete;
-};
-
-int CreerSocket (int port) {
-
-    static struct sockaddr_in adresse;
-    int sock;
-    // création de la socket
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
-        perror("erreur création socket");
-        return(-1);
-    }
-
-    // liaison de la socket sur le port local
-
-    bzero((char *) &adresse, sizeof(adresse)); // Permet allouer la mémoire
-    adresse.sin_family = AF_INET;
-    adresse.sin_port = htons(port);
-    adresse.sin_addr.s_addr=htonl(INADDR_ANY);
-
-    if(bind(sock, (struct sockaddr*)&adresse, sizeof(adresse)) == -1 ) {
-        perror("erreur bind");
-        return(-1);
-    }
-
-    return(sock);
-}
+#include "Barman.h"
 
 void *Handler(void *arg) {
-    printf("activé");
-    struct requete req;
+    puts("serveur s'occupe du client");
     // récupère la socket service
     int sock = *(int*) arg;
-    int nb;
-    if (read(sock, &req, sizeof(struct requete)) <= 0 ){
-        perror("Erreur lecture");
-        return 0;
-    }
-    printf("%d", req.type_requete);
-    switch (req.type_requete)
-    {
-    case INFO:
-    printf("info");
-        break;
-    case BLONDEDEMI:
-        break;
-    case BLONDEPINTE:
-        break;
-    case AMBREEDEMI:
-        break;
-    case AMBREEPINTE:
-        break;
-    default:
-        perror("Erreur handler");
-        break;
-    }
+    char *message;
+    char reponse[50];
+    int demande;
+
+    message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
+    write(sock , message , strlen(message));
+
+    read(sock, reponse, 50);
+    printf("%s\n", reponse);
+
+    if (strcmp(reponse, "1") || strcmp(reponse, "Informations")) demande = 1;
+    else if (strcmp(reponse, "2") || strcmp(reponse, "Blonde demi")) demande = 2;
+    else if (strcmp(reponse, "3") || strcmp(reponse, "Blonde pinte")) demande = 3;
+    else if (strcmp(reponse, "4") || strcmp(reponse, "Ambrée demi")) demande = 4;
+    else if (strcmp(reponse, "5") || strcmp(reponse, "Ambrée Pinte")) demande = 5;
+    else puts("erreur");
+
+    close(sock);
 }
 
 int main() {
 
-    int socket_ecoute, socket_service;
-    static struct sockaddr_in addr_client;
-    int lg;
-    pthread_t thread_id;
-
-    socket_ecoute = CreerSocket(4080);
-    if (socket_ecoute == -1) {
-        perror("creation socket service");
-        exit(1);
+    int socket_desc , client_sock , c;
+    struct sockaddr_in server , client;
+     
+    //Create socket
+    socket_desc = socket(AF_INET , SOCK_STREAM , 0);
+    if (socket_desc == -1) {
+        perror("erreur socket");
+        return 1;
     }
-
-    if (listen(socket_ecoute, 10) == -1) {
-        perror("listen");
-        exit(-1);
+    puts("Socket crée");
+     
+    //TCP
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(4444);
+     
+    //Bind
+    if(bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0) {
+        perror("Erreur bind");
+        return 1;
     }
-
-    printf("Connexion effectué \n");
-    while (1) {
-        lg = sizeof(struct sockaddr_in);
-        printf("Attend une connexion \n");
-        // Attend une connection dans la socket puis crée un thread pour gérer la connection
-        socket_service = accept(socket_ecoute, (struct sockaddr*)&addr_client, &lg);
-        printf("thread ");
-        if(pthread_create( &thread_id , NULL ,  Handler , (void*) &socket_service) < 0)
-        {
+     
+    //Listen
+    puts("listen");
+    listen(socket_desc , 3);
+    c = sizeof(struct sockaddr_in);
+	pthread_t thread_id;
+	
+    while((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))) {
+        puts("Connection accepté");
+        if( pthread_create(&thread_id, NULL,  Handler, (void*) &client_sock) < 0) {
             perror("erreur thread");
             return 1;
         }
     }
+     
+    if (client_sock < 0) {
+        perror("erreur client");
+        return 1;
+    }
+    
+    close(socket_desc);
+    return 0;
 }
