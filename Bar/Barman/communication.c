@@ -6,7 +6,7 @@ void *Handler(void *arg) {
     int sock = *(int*) arg;
     char *message;
     char reponse[50];
-    int demande;
+    int demande = 0;
 
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
     write(sock , message , strlen(message));
@@ -20,6 +20,7 @@ void *Handler(void *arg) {
     else if (strcmp(reponse, "4") || strcmp(reponse, "Ambrée demi")) demande = 4;
     else if (strcmp(reponse, "5") || strcmp(reponse, "Ambrée Pinte")) demande = 5;
     else puts("erreur");
+    printf("%d", demande);
 
     close(sock);
 }

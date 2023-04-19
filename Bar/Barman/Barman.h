@@ -8,3 +8,5 @@
 #include <errno.h>
 #include <string.h>
 #include <pthread.h>
+#include <sys/wait.h>
+#include <signal.h>
