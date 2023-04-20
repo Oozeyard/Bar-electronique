@@ -25,14 +25,13 @@ void *Handler(void *arg) {
     close(sock);
 }
 
-int main() {
-
-    int socket_desc , client_sock , c;
-    struct sockaddr_in server , client;
-     
+int socketTCP() {
+    
+    int sock;
+    struct sockaddr_in server;
     //Create socket
-    socket_desc = socket(AF_INET , SOCK_STREAM , 0);
-    if (socket_desc == -1) {
+    sock = socket(AF_INET , SOCK_STREAM , 0);
+    if (sock == -1) {
         perror("erreur socket");
         return 1;
     }
@@ -44,18 +43,28 @@ int main() {
     server.sin_port = htons(4444);
      
     //Bind
-    if(bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0) {
+    if(bind(sock,(struct sockaddr *)&server , sizeof(server)) < 0) {
         perror("Erreur bind");
         return 1;
     }
+
+    return sock;
      
+}
+
+int communication(int sock) {
+
+    int client_sock , c;
+    struct sockaddr_in client;
+     
+    
     //Listen
     puts("listen");
-    listen(socket_desc , 3);
+    listen(sock , 3);
     c = sizeof(struct sockaddr_in);
 	pthread_t thread_id;
 	
-    while((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))) {
+    while((client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c))) {
         puts("Connection accepté");
         if( pthread_create(&thread_id, NULL,  Handler, (void*) &client_sock) < 0) {
             perror("erreur thread");
@@ -68,6 +77,6 @@ int main() {
         return 1;
     }
     
-    close(socket_desc);
+    close(sock);
     return 0;
 }

@@ -1,29 +1,35 @@
 #include "Barman.h"
 
 int main() {
+    printf("programme : %d\n", getpid());
     pid_t pidCtrl, pidMain, pidCom, pidScr;
     if ((pidCtrl = fork()) == 0) {
+        printf("Controle : %d\n", getpid());
     // Code processus Controle
     }
-    if ((pidMain = fork()) == 0) {
+    else if ((pidMain = fork()) == 0) {
         // Code processus Main
+        printf("Main : %d\n", getpid());
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            puts("Bonjour je suis pid Main et je travaille");
+            principal();
         }
     }
-    if ((pidCom = fork()) == 0) {
+    else if ((pidCom = fork()) == 0) {
         // Code processus Communication
+        printf("Communication : %d\n", getpid());
+        //int socket = socketTCP();
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            puts("Bonjour je suis pid Com et je travaille");
+            //communication(socket);
         }
     }
-    if ((pidScr = fork()) == 0) {
+    else if ((pidScr = fork()) == 0) {
         // Code processus Sécurité
+        printf("Securite : %d\n", getpid());
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            puts("Bonjour je suis pid Scr et je travaille");
+            securite();
         }
     }
     
@@ -39,4 +45,8 @@ int main() {
         kill(pidScr, SIGSTOP);
     }
     
+}
+
+int principal() {
+    printf("oui\n");
 }

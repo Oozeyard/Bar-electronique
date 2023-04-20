@@ -10,3 +10,8 @@
 #include <pthread.h>
 #include <sys/wait.h>
 #include <signal.h>
+
+int principal();
+int communication();
+int socketTCP();
+int securite();
