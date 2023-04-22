@@ -11,8 +11,7 @@ int socketUDP() {
         return 1;
     }
     puts("Socket crée");
-     
-    //TCP
+    
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(4445);

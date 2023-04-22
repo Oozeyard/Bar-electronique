@@ -10,8 +10,13 @@
 #include <pthread.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 
-int principal();
-int communication();
-int socketTCP();
-int securite();
+int principal(); // Programme main
+void ajout(int valeur); // Ajout dans l'ordonnanceur
+void traiter(); // Traiter client dans l'ordonnanceur
+int communication(); // Programme Communication
+int socketTCP(); // Création socket TCP
+int socketUDP(); // Création socket UDP
+int securite(); // Programme Sécurite
+
