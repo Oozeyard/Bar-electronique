@@ -11,6 +11,17 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+struct Tireuse
+{
+    int type; // 1 == blonde , 2 == ambrée
+    char* nom;
+    int qte;
+};
+
 
 int principal(); // Programme main
 void ajout(int valeur); // Ajout dans l'ordonnanceur

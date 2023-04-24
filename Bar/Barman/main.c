@@ -5,26 +5,23 @@ int queue[TAILLEMAX]; // Ordonnanceur FIFO
 int devant = -1, derriere = -1;
 
 int main() {
-    printf("programme : %d\n", getpid());
     pid_t pidCtrl, pidMain, pidCom, pidScr;
     if ((pidCtrl = fork()) == 0) {
         // Code processus Controle
         
-        printf("Controle : %d\n", getpid());
     }
     else if ((pidMain = fork()) == 0) {
         // Code processus Main
 
-        printf("Main : %d\n", getpid());
+        mkfifo("pipe", 0666);
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            //principal();
+            principal();
         }
     }
     else if ((pidCom = fork()) == 0) {
         // Code processus Communication
 
-        printf("Communication : %d\n", getpid());
         int socket = socketTCP();
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
@@ -33,7 +30,7 @@ int main() {
     }
     else if ((pidScr = fork()) == 0) {
         // Code processus Sécurité
-        printf("Securite : %d\n", getpid());
+
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
             securite();
@@ -53,14 +50,18 @@ int main() {
 
 int principal() {
     int fd;
-    char buffer[1];
+    char buffer[10];
     int valeur;
+    int n;
 
-    fd = open("communication", O_RDONLY);
-    read(fd, buffer, sizeof(buffer));
-    valeur = strtol(buffer, NULL, 0);
-    ajout(valeur);
-    traiter();
+    fd = open("pipe", O_RDONLY);
+    while((n = read(fd, buffer, 1) ) > 0) {
+        printf("buffer = %s\n", buffer);
+        valeur = strtol(buffer, NULL, 0);
+        printf("valeur %d\n", valeur);
+        ajout(valeur);
+        traiter();
+    }
 }
 
 void ajout(int valeur) {
@@ -76,7 +77,7 @@ void ajout(int valeur) {
 void traiter() {
     if (devant == -1) puts("Queue est vide");
     else {
-        printf("client traité : %d", queue[devant]);
+        printf("client traité : %d\n", queue[devant]);
         devant++;
         if (devant > derriere) devant = derriere = -1;
     }

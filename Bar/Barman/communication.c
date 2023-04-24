@@ -6,7 +6,7 @@ void *Handler(void *arg) {
     int sock = *(int*) arg;
     char *message;
     char reponse[50];
-    char demande[1];
+    char* demande;
     int fd;
 
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
@@ -15,15 +15,16 @@ void *Handler(void *arg) {
     read(sock, reponse, 50);
     printf("%s\n", reponse);
 
-    if (strcmp(reponse, "1") || strcmp(reponse, "Informations")) demande = "1";
+   /* if (strcmp(reponse, "1") || strcmp(reponse, "Informations")) demande = "1";
     else if (strcmp(reponse, "2") || strcmp(reponse, "Blonde demi")) demande = "2";
     else if (strcmp(reponse, "3") || strcmp(reponse, "Blonde pinte")) demande = "3";
     else if (strcmp(reponse, "4") || strcmp(reponse, "Ambrée demi")) demande = "4";
     else if (strcmp(reponse, "5") || strcmp(reponse, "Ambrée Pinte")) demande = "5";
     else puts("erreur");
+    printf("%s\n", demande); */
     
-    fd = open("communication", O_WRONLY);
-    write(fd, demande, sizeof(demande));
+    fd = open("pipe", O_WRONLY);
+    write(fd, reponse, 1);
 
     close(sock);
 }
