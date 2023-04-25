@@ -15,12 +15,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-struct Tireuse
-{
+typedef struct {
     int type; // 1 == blonde , 2 == ambrée
     char* nom;
     int qte;
-};
+} Tireuse;
 
 
 int principal(); // Programme main
@@ -30,4 +29,5 @@ int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
 int socketUDP(); // Création socket UDP
 int securite(); // Programme Sécurite
-
+int controle(); // Programme controle
+int tireuse();

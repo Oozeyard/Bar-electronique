@@ -1,32 +1,27 @@
 #include "Barman/Barman.h"
 
 int tireuse() {
-    struct Tireuse *blonde;
+    int shmidb, shmida;
+    key_t keyb = 5, keya = 6;
+    Tireuse* blonde;
+    Tireuse* ambree;
+
     blonde->type = 1;
-    struct Tireuse *ambree;
+    blonde->nom = "vide";
+    blonde->qte = 0;
     ambree->type = 2;
+    ambree->nom = "vide";
+    ambree->qte = 0;
 
-    int keyblonde, keyambree, statusblonde, statusambree;
-    keyblonde = 5;
-    keyambree = 6;
+    shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
+    blonde = (Tireuse*) shmat(shmidb, NULL, 0);
 
-    if((statusblonde = shmget(keyblonde, sizeof(struct Tireuse), IPC_CREAT|IPC_EXCL|0600))==-1) {
-        printf("shm1.shmget: %s\n", sterror(errno));
-        exit(1);
-    }
-    if((blonde =(char*) shmat(statusblonde, NULL, 0)) == (char*)-1){
-        printf("shm1.shmat: %s\n", sterror(errno));
-        exit(1);
-    }
-
-    if((statusambree = shmget(keyambree, sizeof(struct Tireuse), IPC_CREAT|IPC_EXCL|0600))==-1) {
-        printf("shm1.shmget: %s\n", sterror(errno));
-        exit(1);
-    }
-    if((ambree =(char*) shmat(statusambree, NULL, 0)) == (char*)-1){
-        printf("shm1.shmat: %s\n", sterror(errno));
-        exit(1);
-    }
+    shmida = shmget(keya, sizeof(Tireuse), IPC_CREAT | 0666);
+    ambree = (Tireuse*) shmat(shmida, NULL, 0);
 
     return 0;
 }
+
+tirerblonde();
+
+tirerambree();

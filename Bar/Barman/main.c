@@ -7,8 +7,9 @@ int devant = -1, derriere = -1;
 int main() {
     pid_t pidCtrl, pidMain, pidCom, pidScr;
     if ((pidCtrl = fork()) == 0) {
+        tireuse();
+        controle();
         // Code processus Controle
-        
     }
     else if ((pidMain = fork()) == 0) {
         // Code processus Main

@@ -25,3 +25,26 @@ int socketUDP() {
     return sock;
      
 }
+
+int controle() {
+    int shmidb, shmida;
+    key_t keyb = 5, keya = 6;
+    Tireuse* blonde;
+    Tireuse* ambree;
+
+    shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
+    blonde = (Tireuse*) shmat(shmidb, NULL, 0);
+
+    shmida = shmget(keya, sizeof(Tireuse), IPC_CREAT | 0666);
+    ambree = (Tireuse*) shmat(shmida, NULL, 0);
+
+    while(1) {
+        if (blonde->qte == 0) {
+            //puts("blonde vide");
+        }
+        if (ambree->qte == 0) {
+            //puts("ambree vide");
+        }
+        sleep(2);
+    }
+}
