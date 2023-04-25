@@ -6,10 +6,11 @@ int tireuse() {
     Tireuse* blonde;
     Tireuse* ambree;
 
-    blonde->type = 1;
+    // Mise en place de la SHM
+    blonde->type = "blonde";
     blonde->nom = "vide";
     blonde->qte = 0;
-    ambree->type = 2;
+    ambree->type = "ambree";
     ambree->nom = "vide";
     ambree->qte = 0;
 
@@ -21,7 +22,3 @@ int tireuse() {
 
     return 0;
 }
-
-tirerblonde();
-
-tirerambree();

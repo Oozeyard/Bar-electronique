@@ -16,7 +16,7 @@
 #include <sys/shm.h>
 
 typedef struct {
-    int type; // 1 == blonde , 2 == ambrée
+    char* type;
     char* nom;
     int qte;
 } Tireuse;
@@ -24,10 +24,10 @@ typedef struct {
 
 int principal(); // Programme main
 void ajout(int valeur); // Ajout dans l'ordonnanceur
-void traiter(); // Traiter client dans l'ordonnanceur
+char* traiter(); // Traiter client dans l'ordonnanceur
 int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
 int socketUDP(); // Création socket UDP
 int securite(); // Programme Sécurite
 int controle(); // Programme controle
-int tireuse();
+int tireuse(); // Programme tireuse
