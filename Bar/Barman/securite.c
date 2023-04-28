@@ -1,3 +1,3 @@
-int securite() {
-    
+int fermeture() {
+    // close
 }
