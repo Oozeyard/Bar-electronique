@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#define TAILLEMAX 50
 
 typedef struct {
     char* type;
@@ -28,6 +29,6 @@ char* traiter(); // Traiter client dans l'ordonnanceur
 int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
 int socketUDP(); // Création socket UDP
-int securite(); // Programme Sécurite
+int fermeture(); // Programme Sécurite
 int controle(); // Programme controle
 int tireuse(); // Programme tireuse

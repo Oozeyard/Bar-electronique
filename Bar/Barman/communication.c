@@ -15,6 +15,7 @@ void *Handler(void *arg) {
     read(sock, reponse, 50);
     printf("%s\n", reponse);
 
+    memset(reponse,0,sizeof(reponse));
    /* if (strcmp(reponse, "1") || strcmp(reponse, "Informations")) demande = "1";
     else if (strcmp(reponse, "2") || strcmp(reponse, "Blonde demi")) demande = "2";
     else if (strcmp(reponse, "3") || strcmp(reponse, "Blonde pinte")) demande = "3";
@@ -23,8 +24,13 @@ void *Handler(void *arg) {
     else puts("erreur");
     printf("%s\n", demande); */
     
-    fd = open("pipe", O_WRONLY);
+    fd = open("pipe", O_RDWR);
     write(fd, reponse, 1);
+
+    while((read(fd, reponse, 1)) > 0) {
+        printf("reponse : %s\n", reponse);
+        write(sock, reponse, strlen(reponse));
+    }
 
     close(sock);
 }
@@ -49,7 +55,8 @@ int socketTCP() {
     //Bind
     if(bind(sock,(struct sockaddr *)&server , sizeof(server)) < 0) {
         perror("Erreur bind");
-        return 1;
+        close(sock);
+        exit(1);
     }
 
     return sock;

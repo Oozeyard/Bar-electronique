@@ -47,10 +47,15 @@ int traiter(int sock) {
     // la connexion est établie, on attend les données envoyées par le client
     read(sock, reponse, 100000);
     // affichage du message reçu
-    printf("%s", reponse);
+    printf("%s\n", reponse);
     scanf("%s", message);
-    
+
+    // écrit la demande
     write(sock , message , strlen(message)+1);
+    // lit la réponse
+    read(sock, reponse, 100000);
+    printf("%s\n", reponse);
+
     return 1;
 }
 
@@ -65,4 +70,5 @@ int main() {
     traiter(sock);
 
     close(sock);
+    return 1;
 }

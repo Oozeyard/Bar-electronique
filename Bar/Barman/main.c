@@ -32,10 +32,9 @@ int main() {
     }
     else if ((pidScr = fork()) == 0) {
         // Code processus Sécurité
-
+        signal (SIGINT, fermeture());
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            securite();
         }
     }
     
@@ -70,6 +69,7 @@ int principal() {
         devant++;
         if (devant > derriere) devant = derriere = -1;
         // Envoie la commande
+        printf("message : %s", reponse);
         write(fd, reponse, 500);
     }
 }
@@ -91,6 +91,7 @@ char* traiter() {
         key_t keyb = 5, keya = 6;
         Tireuse* blonde;
         Tireuse* ambree;
+        char* reponse;
 
         // SHM
         shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
@@ -103,42 +104,44 @@ char* traiter() {
         // Prise en charge de la demande
         switch (queue[devant]) {
         case 1: // Informations
-            return("Voici ce que nous pouvons vous proposer :\n une bière %s, %s et une bière %s, %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
+            sprintf(reponse, "Voici ce que nous pouvons vous proposer :\n une bière %s, %s et une bière %s, %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
             break;
         case 2: // Blonde demi
-            if(blonde->qte < 25) return("nous avons malheuresement plus de blonde");
+            if(blonde->qte < 25) reponse = "nous avons malheuresement plus de blonde";
             else {
                 sleep(2);
                 blonde->qte = blonde->qte - 25;
-                return("blonde demi");
+                reponse = "blonde demi";
             }
             break;
         case 3: // Blonde pinte
-            if(blonde->qte < 50) return("nous avons malheuresement plus de blonde");
+            if(blonde->qte < 50) reponse = "nous avons malheuresement plus de blonde";
             else {
                 sleep(4);
                 blonde->qte = blonde->qte - 50;
-                return("blonde pinte");
+                reponse = "blonde pinte";
             }
             break;
         case 4: // Ambree demin
-            if(ambree->qte < 25) return("nous avons malheuresement plus d'ambree");
+            if(ambree->qte < 25) reponse = "nous avons malheuresement plus d'ambree";
             else {
                 sleep(2);
                 ambree->qte = ambree->qte - 25;
-                return("ambree demi");
+                reponse = "ambree demi";
             }
             break;
         case 5: // Ambree pinte
-            if(ambree->qte < 50) return("nous avons malheuresement plus d'ambree");
+            if(ambree->qte < 50) reponse = "nous avons malheuresement plus d'ambree";
             else {
                 sleep(4);
                 ambree->qte = ambree->qte - 50;
-                return("ambree demi");
+                reponse = "ambree demi";
+            }
             break;
         default:
-            return("demande inconnue");
+            reponse = "demande inconnue";
             break;
         };
+        return reponse;
     }
 }
