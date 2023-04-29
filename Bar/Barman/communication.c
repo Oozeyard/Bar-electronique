@@ -5,33 +5,27 @@ void *Handler(void *arg) {
     // récupère la socket service
     int sock = *(int*) arg;
     char *message;
-    char reponse[50];
-    char* demande;
+    char reponse[200];
     int fd;
 
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
-    write(sock , message , strlen(message));
+    write(sock , message , strlen(message)+1);
 
     read(sock, reponse, 50);
     printf("%s\n", reponse);
+    
+    fd = open("pipes/demande", O_WRONLY);
+    write(fd, reponse, 1);
+    close(fd);
 
     memset(reponse,0,sizeof(reponse));
-   /* if (strcmp(reponse, "1") || strcmp(reponse, "Informations")) demande = "1";
-    else if (strcmp(reponse, "2") || strcmp(reponse, "Blonde demi")) demande = "2";
-    else if (strcmp(reponse, "3") || strcmp(reponse, "Blonde pinte")) demande = "3";
-    else if (strcmp(reponse, "4") || strcmp(reponse, "Ambrée demi")) demande = "4";
-    else if (strcmp(reponse, "5") || strcmp(reponse, "Ambrée Pinte")) demande = "5";
-    else puts("erreur");
-    printf("%s\n", demande); */
-    
-    fd = open("pipe", O_RDWR);
-    write(fd, reponse, 1);
 
-    while((read(fd, reponse, 1)) > 0) {
-        printf("reponse : %s\n", reponse);
+    fd = open("pipes/recu", O_RDONLY);
+    if((read(fd, reponse, 200)) > 0) {
+        printf("reponse comm : %s\n", reponse);
         write(sock, reponse, strlen(reponse));
     }
-
+    close(fd);
     close(sock);
 }
 
@@ -51,7 +45,9 @@ int socketTCP() {
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(4444);
+    int option = 1;
      
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
     //Bind
     if(bind(sock,(struct sockaddr *)&server , sizeof(server)) < 0) {
         perror("Erreur bind");

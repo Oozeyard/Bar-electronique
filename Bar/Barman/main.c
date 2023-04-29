@@ -8,14 +8,14 @@ int main() {
     pid_t pidCtrl, pidMain, pidCom, pidScr;
     if ((pidCtrl = fork()) == 0) {
         // Code processus Controle
-
         tireuse();
         controle();
     }
     else if ((pidMain = fork()) == 0) {
         // Code processus Main
 
-        mkfifo("pipe", 0666);
+        mkfifo("pipes/demande", 0666);
+        mkfifo("pipes/recu", 0666);
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
             principal();
@@ -32,21 +32,22 @@ int main() {
     }
     else if ((pidScr = fork()) == 0) {
         // Code processus Sécurité
-        signal (SIGINT, fermeture());
+        //signal (SIGINT, fermeture());
         while (1) {
             kill(getpid(), SIGSTOP); // Attend que le père donne la main
         }
     }
     
     while (1) {
-        kill(pidMain, SIGCONT); // Réveille Main
-        sleep(1);
+        // Main travaille
+        kill(pidMain, SIGCONT);
+        //sleep(1);
+        //kill(pidMain, SIGSTOP);
+        // Com travaille
         kill(pidCom, SIGCONT);
-        sleep(1);
-        kill(pidScr, SIGCONT);
-        sleep(1);
+        //sleep(1);
+        //kill(pidCom, SIGSTOP);
     }
-    
 }
 
 int principal() {
@@ -57,10 +58,13 @@ int principal() {
     char* reponse;
 
     // Ouvre pipe
-    fd = open("pipe", O_RDWR);
-    while((n = read(fd, buffer, 1) ) > 0) { // Attente lecture
+    fd = open("pipes/demande", O_RDONLY);
+    if((n = read(fd, buffer, 1) ) > 0) { // Attente lecture
+        close(fd);
+        printf("read : %s\n", buffer);
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
+        if(valeur == 0) return 0;
         // Ajout la demande dans l'ordonnanceur
         ajout(valeur);
         // Occupe de la demande
@@ -69,9 +73,12 @@ int principal() {
         devant++;
         if (devant > derriere) devant = derriere = -1;
         // Envoie la commande
-        printf("message : %s", reponse);
+        printf("message : %s\n", reponse);
+        fd = open("pipes/recu", O_WRONLY);
         write(fd, reponse, 500);
+        close(fd);
     }
+    return 1;
 }
 
 void ajout(int valeur) {
@@ -91,7 +98,9 @@ char* traiter() {
         key_t keyb = 5, keya = 6;
         Tireuse* blonde;
         Tireuse* ambree;
+        char* buffer;
         char* reponse;
+        buffer = (char*) malloc(200);
 
         // SHM
         shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
@@ -104,7 +113,8 @@ char* traiter() {
         // Prise en charge de la demande
         switch (queue[devant]) {
         case 1: // Informations
-            sprintf(reponse, "Voici ce que nous pouvons vous proposer :\n une bière %s, %s et une bière %s, %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
+            sprintf(buffer, "Voici ce que nous pouvons vous proposer :\n une bière %s de marque %s et une bière %s de marque %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
+            strncpy(reponse, buffer, 200); // Permet de copier la valeur et non le pointeur
             break;
         case 2: // Blonde demi
             if(blonde->qte < 25) reponse = "nous avons malheuresement plus de blonde";
@@ -142,6 +152,7 @@ char* traiter() {
             reponse = "demande inconnue";
             break;
         };
+        printf("traitement : %s\n",reponse);
         return reponse;
     }
 }

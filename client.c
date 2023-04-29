@@ -43,9 +43,10 @@ int CreerSocket(char* addr, int port) {
 int traiter(int sock) {
     char* reponse;
     char* message;
+    reponse=(char *)malloc(200);
     message=(char *)malloc(50);
     // la connexion est établie, on attend les données envoyées par le client
-    read(sock, reponse, 100000);
+    read(sock, reponse, 200);
     // affichage du message reçu
     printf("%s\n", reponse);
     scanf("%s", message);
@@ -53,7 +54,8 @@ int traiter(int sock) {
     // écrit la demande
     write(sock , message , strlen(message)+1);
     // lit la réponse
-    read(sock, reponse, 100000);
+    memset(reponse,0,200); // Vide la variable reponse
+    read(sock, reponse, 200);
     printf("%s\n", reponse);
 
     return 1;
@@ -66,7 +68,7 @@ int main() {
         return 1;
     }
 
-    printf("connexion établie");
+    printf("connexion établie \n");
     traiter(sock);
 
     close(sock);
