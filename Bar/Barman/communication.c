@@ -14,14 +14,15 @@ void *Handler(void *arg) {
     read(sock, reponse, 50);
     printf("%s\n", reponse);
     
+    // Envoie la demande au Main
     fd = open("pipes/demande", O_WRONLY);
     write(fd, reponse, 1);
     close(fd);
 
-    memset(reponse,0,sizeof(reponse));
+    memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
 
     fd = open("pipes/recu", O_RDONLY);
-    if((read(fd, reponse, 200)) > 0) {
+    if((read(fd, reponse, 200)) > 0) { // Attente de la commande
         printf("reponse comm : %s\n", reponse);
         write(sock, reponse, strlen(reponse));
     }
@@ -71,6 +72,7 @@ int communication(int sock) {
     c = sizeof(struct sockaddr_in);
 	pthread_t thread_id;
 	
+    // Lorsqu'une connection est accepté le processus crée un thread avec la socket client en arg
     while((client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c))) {
         puts("Connection accepté");
         if( pthread_create(&thread_id, NULL,  Handler, (void*) &client_sock) < 0) {

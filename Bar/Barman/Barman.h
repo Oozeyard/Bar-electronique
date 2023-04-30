@@ -14,9 +14,9 @@
 #include <sys/stat.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#define TAILLEMAX 50
+#define TAILLEMAX 50 // Taille de l'ordonnanceur
 
-typedef struct {
+typedef struct { 
     char* type;
     char* nom;
     int qte;
@@ -30,5 +30,5 @@ int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
 int socketUDP(); // Création socket UDP
 int fermeture(); // Programme Sécurite
-int controle(); // Programme controle
+void controle(); // Programme controle
 int tireuse(); // Programme tireuse

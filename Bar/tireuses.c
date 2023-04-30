@@ -13,6 +13,7 @@ int tireuse() {
     shmida = shmget(keya, sizeof(Tireuse), IPC_CREAT | 0666);
     ambree = (Tireuse*) shmat(shmida, NULL, 0);
 
+    // Initialisation des tireuses
     blonde->type = "blonde";
     blonde->nom = "vide";
     blonde->qte = 0;
@@ -20,5 +21,5 @@ int tireuse() {
     ambree->nom = "vide";
     ambree->qte = 0;
 
-    return 0;
+    return 1;
 }

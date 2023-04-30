@@ -1,5 +1,4 @@
 #include "Barman.h"
-#define TAILLEMAX 50
 
 int queue[TAILLEMAX]; // Ordonnanceur FIFO
 int devant = -1, derriere = -1;
@@ -14,11 +13,11 @@ int main() {
     else if ((pidMain = fork()) == 0) {
         // Code processus Main
 
-        mkfifo("pipes/demande", 0666);
-        mkfifo("pipes/recu", 0666);
+        mkfifo("pipes/demande", 0666); // Pipe communication à main
+        mkfifo("pipes/recu", 0666); // Pipe main à communication
         while (1) {
-            kill(getpid(), SIGSTOP); // Attend que le père donne la main
-            principal();
+            //kill(getpid(), SIGSTOP); // Attend que le père donne la main
+            principal(); 
         }
     }
     else if ((pidCom = fork()) == 0) {
@@ -26,7 +25,7 @@ int main() {
 
         int socket = socketTCP();
         while (1) {
-            kill(getpid(), SIGSTOP); // Attend que le père donne la main
+            //kill(getpid(), SIGSTOP); // Attend que le père donne la main
             communication(socket);
         }
     }
@@ -39,14 +38,18 @@ int main() {
     }
     
     while (1) {
-        // Main travaille
+        // Main travail
         kill(pidMain, SIGCONT);
-        //sleep(1);
-        //kill(pidMain, SIGSTOP);
-        // Com travaille
+        sleep(1);
+       // kill(pidMain, SIGSTOP);
+        // Com travail
         kill(pidCom, SIGCONT);
-        //sleep(1);
-        //kill(pidCom, SIGSTOP);
+        sleep(1);
+       // kill(pidCom, SIGSTOP);
+        // Sécurité travail
+        kill(pidScr, SIGCONT);
+        sleep(1);
+       // kill(pidScr, SIGSTOP);
     }
 }
 
@@ -59,25 +62,25 @@ int principal() {
 
     // Ouvre pipe
     fd = open("pipes/demande", O_RDONLY);
-    if((n = read(fd, buffer, 1) ) > 0) { // Attente lecture
+    while((n = read(fd, buffer, 1) ) > 0) { // Attente lecture
         close(fd);
         printf("read : %s\n", buffer);
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
-        if(valeur == 0) return 0;
+        if(valeur == 0) return 0; // En cas d'erreurs
         // Ajout la demande dans l'ordonnanceur
         ajout(valeur);
-        // Occupe de la demande
-        reponse = traiter();
-        // Incrémentation de l'ordonnanceur
-        devant++;
-        if (devant > derriere) devant = derriere = -1;
-        // Envoie la commande
-        printf("message : %s\n", reponse);
-        fd = open("pipes/recu", O_WRONLY);
-        write(fd, reponse, 500);
-        close(fd);
     }
+    // Traite de la demande
+    reponse = traiter();
+    // Incrémentation de l'ordonnanceur
+    devant++;
+    if (devant > derriere) devant = derriere = -1;
+    // Envoie la commande
+    printf("message : %s\n", reponse);
+    fd = open("pipes/recu", O_WRONLY);
+    write(fd, reponse, 500);
+    close(fd);
     return 1;
 }
 

@@ -26,7 +26,7 @@ int socketUDP() {
      
 }
 
-int controle() {
+void controle() {
     int shmidb, shmida;
     key_t keyb = 5, keya = 6;
     Tireuse* blonde;

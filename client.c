@@ -41,10 +41,9 @@ int CreerSocket(char* addr, int port) {
 }
 
 int traiter(int sock) {
-    char* reponse;
-    char* message;
-    reponse=(char *)malloc(200);
-    message=(char *)malloc(50);
+    char reponse[200];
+    char message[1];
+
     // la connexion est établie, on attend les données envoyées par le client
     read(sock, reponse, 200);
     // affichage du message reçu
