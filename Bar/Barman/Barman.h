@@ -17,11 +17,10 @@
 #define TAILLEMAX 50 // Taille de l'ordonnanceur
 
 typedef struct { 
-    char* type;
-    char* nom;
     int qte;
+    char type[50];
+    char nom[50];
 } Tireuse;
-
 
 int principal(); // Programme main
 void ajout(int valeur); // Ajout dans l'ordonnanceur

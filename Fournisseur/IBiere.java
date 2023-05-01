@@ -1,3 +1,4 @@
+
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 
@@ -17,9 +18,8 @@ public interface IBiere extends Remote {
 
     /**
      * Retourne un fut de biere de la biere dont on passe le nom en parametre.
-     * Si cette bier n'existe pas, retounre <code>null</code>
+     * Si cette bier n'existe pas, retourne <code>null</code>
      */
     public Biere acheterBiere(String nom) throws RemoteException;
 
 }
- 
