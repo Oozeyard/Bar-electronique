@@ -35,7 +35,7 @@ int main() {
     }
     
     while (1) {
-        // Main travail
+        //Main travail
         //kill(pidMain, SIGCONT);
         sleep(1);
         //kill(pidMain, SIGSTOP);
