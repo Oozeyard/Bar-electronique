@@ -11,21 +11,20 @@ void *Handler(void *arg) {
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
     write(sock , message , strlen(message)+1);
 
-    read(sock, reponse, 50);
-    printf("%s\n", reponse);
+    read(sock, reponse, 1);
+    printf("demande client : %s\n", reponse);
     
     // Envoie la demande au Main
     fd = open("pipes/demande", O_WRONLY);
-    write(fd, reponse, 1);
+    if (write(fd, reponse, 1) < 0) puts("erreur écriture");
     close(fd);
 
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
 
     fd = open("pipes/recu", O_RDONLY);
-    if((read(fd, reponse, 200)) > 0) { // Attente de la commande
-        printf("reponse comm : %s\n", reponse);
+    read(fd, reponse, 200);// Attente de la commande
+        printf("reponse : %s\n", reponse);
         write(sock, reponse, strlen(reponse));
-    }
     close(fd);
     close(sock);
 }

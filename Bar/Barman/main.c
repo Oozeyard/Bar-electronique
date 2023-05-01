@@ -41,43 +41,43 @@ int main() {
         // Main travail
         kill(pidMain, SIGCONT);
         sleep(1);
-       // kill(pidMain, SIGSTOP);
+        //kill(pidMain, SIGSTOP);
         // Com travail
         kill(pidCom, SIGCONT);
         sleep(1);
-       // kill(pidCom, SIGSTOP);
+        //kill(pidCom, SIGSTOP);
         // Sécurité travail
         kill(pidScr, SIGCONT);
         sleep(1);
-       // kill(pidScr, SIGSTOP);
+        //kill(pidScr, SIGSTOP);
     }
 }
 
 int principal() {
     int fd;
-    char buffer[10];
+    char buffer[1];
     int valeur;
-    int n;
     char* reponse;
+    int n;
 
     // Ouvre pipe
     fd = open("pipes/demande", O_RDONLY);
-    while((n = read(fd, buffer, 1) ) > 0) { // Attente lecture
-        close(fd);
-        printf("read : %s\n", buffer);
+    while(n = (read(fd, buffer, 1)) > 0) { // >0 EOF
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
         // Ajout la demande dans l'ordonnanceur
         ajout(valeur);
+        memset(buffer,0,sizeof(buffer));
     }
+    if (n == -1) puts("erreur");
+    close(fd);
     // Traite de la demande
     reponse = traiter();
     // Incrémentation de l'ordonnanceur
     devant++;
     if (devant > derriere) devant = derriere = -1;
     // Envoie la commande
-    printf("message : %s\n", reponse);
     fd = open("pipes/recu", O_WRONLY);
     write(fd, reponse, 500);
     close(fd);
@@ -101,9 +101,8 @@ char* traiter() {
         key_t keyb = 5, keya = 6;
         Tireuse* blonde;
         Tireuse* ambree;
-        char* buffer;
+        char buffer[500];
         char* reponse;
-        buffer = (char*) malloc(200);
 
         // SHM
         shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
@@ -116,8 +115,10 @@ char* traiter() {
         // Prise en charge de la demande
         switch (queue[devant]) {
         case 1: // Informations
+            char buf[500];
             sprintf(buffer, "Voici ce que nous pouvons vous proposer :\n une bière %s de marque %s et une bière %s de marque %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
-            strncpy(reponse, buffer, 200); // Permet de copier la valeur et non le pointeur
+            strncpy(buf, buffer, sizeof(buffer)); // Permet de copier la valeur et non le pointeur
+            reponse = buf;
             break;
         case 2: // Blonde demi
             if(blonde->qte < 25) reponse = "nous avons malheuresement plus de blonde";
@@ -155,7 +156,6 @@ char* traiter() {
             reponse = "demande inconnue";
             break;
         };
-        printf("traitement : %s\n",reponse);
         return reponse;
     }
 }
