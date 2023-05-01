@@ -1,3 +1,0 @@
-int fermeture() {
-    // close
-}
