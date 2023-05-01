@@ -9,17 +9,19 @@ int tireuse() {
     // Mise en place de la SHM
     shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
     blonde = (Tireuse*) shmat(shmidb, NULL, 0);
+    if (blonde == (Tireuse*) -1) printf("blonde.shmat: %s\n", strerror(errno));;
 
     shmida = shmget(keya, sizeof(Tireuse), IPC_CREAT | 0666);
     ambree = (Tireuse*) shmat(shmida, NULL, 0);
+    if (ambree == (Tireuse*) -1) printf("ambree.shmat: %s\n", strerror(errno));;
 
     // Initialisation des tireuses
-    blonde->type = "blonde";
-    blonde->nom = "vide";
     blonde->qte = 0;
-    ambree->type = "ambree";
-    ambree->nom = "vide";
     ambree->qte = 0;
+    strcpy(blonde->nom, "null");
+    strncpy(ambree->nom, "null", 50);
+    strncpy(blonde->type, "blonde", 50);
+    strncpy(ambree->type, "ambree", 50);
 
     return 1;
 }
