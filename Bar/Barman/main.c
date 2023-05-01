@@ -16,7 +16,6 @@ int main() {
         mkfifo("pipes/demande", 0666); // Pipe communication à main
         mkfifo("pipes/recu", 0666); // Pipe main à communication
         while (1) {
-            //kill(getpid(), SIGSTOP); // Attend que le père donne la main
             principal(); 
         }
     }
@@ -25,7 +24,6 @@ int main() {
 
         int socket = socketTCP();
         while (1) {
-            //kill(getpid(), SIGSTOP); // Attend que le père donne la main
             communication(socket);
         }
     }
@@ -33,21 +31,20 @@ int main() {
         // Code processus Sécurité
         //signal (SIGINT, fermeture());
         while (1) {
-            kill(getpid(), SIGSTOP); // Attend que le père donne la main
         }
     }
     
     while (1) {
         // Main travail
-        kill(pidMain, SIGCONT);
+        //kill(pidMain, SIGCONT);
         sleep(1);
         //kill(pidMain, SIGSTOP);
         // Com travail
-        kill(pidCom, SIGCONT);
+        //kill(pidCom, SIGCONT);
         sleep(1);
         //kill(pidCom, SIGSTOP);
         // Sécurité travail
-        kill(pidScr, SIGCONT);
+        //kill(pidScr, SIGCONT);
         sleep(1);
         //kill(pidScr, SIGSTOP);
     }
@@ -61,7 +58,9 @@ int principal() {
     int n;
 
     // Ouvre pipe
+    puts("open pipe");
     fd = open("pipes/demande", O_RDONLY);
+    puts("lecture");
     while(n = (read(fd, buffer, 1)) > 0) { // >0 EOF
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
@@ -115,7 +114,7 @@ char* traiter() {
         // Prise en charge de la demande
         switch (queue[devant]) {
         case 1: // Informations
-            char buf[500];
+            char buf[500]; // variable tampon
             sprintf(buffer, "Voici ce que nous pouvons vous proposer :\n une bière %s de marque %s et une bière %s de marque %s", blonde->type, blonde->nom, ambree->type, ambree->nom);
             strncpy(buf, buffer, sizeof(buffer)); // Permet de copier la valeur et non le pointeur
             reponse = buf;

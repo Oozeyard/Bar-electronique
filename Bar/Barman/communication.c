@@ -22,9 +22,10 @@ void *Handler(void *arg) {
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
 
     fd = open("pipes/recu", O_RDONLY);
-    read(fd, reponse, 200);// Attente de la commande
+    if (read(fd, reponse, 200) > 0 ) { // Attente de la commande
         printf("reponse : %s\n", reponse);
         write(sock, reponse, strlen(reponse));
+    }
     close(fd);
     close(sock);
 }
