@@ -65,8 +65,7 @@ int principal() {
     if (fdr == -1 || fdd == -1) puts("erreur pipes");
     if((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
         // Converstion char* en long
-        valeur = strtol(buffer, NULL, 0);
-        if(valeur == 0) return 0; // En cas d'erreurs
+        valeur = strtol(buffer, NULL, 0); // Si buffer est contient un char alors il retourne 0
         // Ajout la demande dans l'ordonnanceur
         ajout(valeur);
         memset(buffer,0,sizeof(buffer));
