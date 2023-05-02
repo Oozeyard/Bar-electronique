@@ -50,15 +50,12 @@ public class Commande extends UnicastRemoteObject {
                     String nextRequete = scanner.nextLine();
                     Biere bir2 = stub.acheterBiere(nextRequete);
 
-                    if(bir2 == null){
-                        System.out.println("La Bière en question n'est pas disponible\n");
-                        buffer = "false".getBytes();
+                    while (bir2 == null){
+                        System.out.println("La bière en question n'est pas disponible, veuillez choisir une autre");
+                        nextRequete = scanner.nextLine();
+                        bir2 = stub.acheterBiere(nextRequete); 
                     }
-                    else{
-                        System.out.println("Fût acheté.");
-                        buffer = nextRequete.getBytes();
-                    }
-
+                    buffer = nextRequete.getBytes();
                     DatagramPacket response = new DatagramPacket(buffer, buffer.length, clientAddress, clientPort);
                     socket.send(response);
                 }
