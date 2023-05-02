@@ -42,17 +42,17 @@ int main() {
     
     while (1) {
         //Main travail
-        kill(pidMain, SIGCONT);
+        //kill(pidMain, SIGCONT);
         sleep(1);
-        kill(pidMain, SIGSTOP);
+        //kill(pidMain, SIGSTOP);
         // Com travail
-        kill(pidCom, SIGCONT);
+        //kill(pidCom, SIGCONT);
         sleep(1);
-        kill(pidCom, SIGSTOP);
+        //kill(pidCom, SIGSTOP);
         // Controle travail
-        kill(pidCtrl, SIGCONT);
+        //kill(pidCtrl, SIGCONT);
         sleep(1);
-        kill(pidCtrl, SIGSTOP);
+        //kill(pidCtrl, SIGSTOP);
     }
 }
 
@@ -158,6 +158,5 @@ char* traiter() {
             reponse = "demande inconnue";
             break;
         };
-        printf("traitement : %s\n", reponse);
         return reponse;
 }

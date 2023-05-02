@@ -6,7 +6,6 @@ void *Handler(void *arg) {
     int sock = *(int*) arg;
     char *message;
     char reponse[200];
-    char reponse2[200];
     int fd;
 
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
@@ -23,9 +22,9 @@ void *Handler(void *arg) {
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
 
     fd = open("pipes/recu", O_RDONLY);
-    if (read(fd, reponse2, sizeof(reponse2)) > 0) {; // Attente de la commande
-        printf("reponse : %s\n", reponse2);
-        write(sock, reponse2, sizeof(reponse2));
+    if (read(fd, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
+        printf("reponse : %s\n", reponse);
+        write(sock, reponse, sizeof(reponse));
     }
     close(fd);
     close(sock);
