@@ -6,7 +6,6 @@ void controle() {
     int shmidb, shmida, sock, reponse;
     char buffer[MAXTAILLE];
     struct sockaddr_in adresse;
-
     socklen_t len;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -16,8 +15,7 @@ void controle() {
     adresse.sin_family = AF_INET;
     adresse.sin_port = htons(1909);
     adresse.sin_addr.s_addr = INADDR_ANY;
-
-
+    
     key_t keyb = 5, keya = 6;
     Tireuse* blonde;
     Tireuse* ambree;
