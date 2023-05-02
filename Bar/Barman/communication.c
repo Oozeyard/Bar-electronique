@@ -3,28 +3,29 @@
 void *Handler(void *arg) {
     puts("serveur s'occupe du client");
     // récupère la socket service
-    ArgComm args = *((ArgComm*) arg);
-    int sock = args.socket;
-    int fdd = args.fdd;
-    int fdr = args.fdr;
-    char *message;
+    int sock = *(int*) arg;
+    int fd;
+    char message[200];
     char reponse[200];
 
-    printf("fdr : %d\nfdd : %d\n", fdr, fdd);
-    message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
+    strncpy(message, "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n", 200);
     write(sock , message , strlen(message)+1);
 
     read(sock, reponse, 2);
     printf("demande client : %s\n", reponse);
     
     // Envoie la demande au Main
-    if (write(fdd, reponse, 1) < 0) printf("write fdd: %s\n", strerror(errno));
+    fd = open("pipes/demande", O_WRONLY);
+    if (write(fd, reponse, 2) < 0) printf("write fdd: %s\n", strerror(errno));
+    close(fd);
 
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
-    if (read(fdr, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
+    fd = open("pipes/recu", O_RDONLY);
+    if (read(fd, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
         printf("reponse : %s\n", reponse);
         write(sock, reponse, sizeof(reponse));
     }
+    close(fd);
     close(sock);
 }
 
@@ -62,10 +63,6 @@ int communication(int sock) {
 
     int client_sock , c;
     struct sockaddr_in client;
-    ArgComm args;
-    args.fdd = open("pipes/demande", O_WRONLY);
-    args.fdr = open("pipes/recu", O_RDONLY);
-    if (args.fdr == -1 || args.fdd == -1) puts("erreur pipes");
 
     //Listen
     puts("listen");
@@ -75,9 +72,8 @@ int communication(int sock) {
 	
     // Lorsqu'une connection est accepté le processus crée un thread avec la socket client en arg
     while((client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c))) {
-        args.socket = client_sock;
         puts("Connection accepté");
-        if( pthread_create(&thread_id, NULL,  Handler, (void*) &args) < 0) {
+        if( pthread_create(&thread_id, NULL,  Handler, (void*) &client_sock) < 0) {
             perror("erreur thread");
             return 1;
         }
@@ -88,8 +84,6 @@ int communication(int sock) {
         return 1;
     }
     
-    close(args.fdd);
-    close(args.fdr);
     close(sock);
     return 0;
 }

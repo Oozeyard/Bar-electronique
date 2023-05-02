@@ -9,8 +9,8 @@ static void fermeture(int sig) {
 }
 
 int main() {
-    mkfifo("/pipes/demande", 0666); // Pipe communication à main
-    mkfifo("/pipes/recu", 0666); // Pipe main à communication
+    mkfifo("pipes/demande", 0666); // Pipe communication à main
+    mkfifo("pipes/recu", 0666); // Pipe main à communication
     pid_t pidCtrl, pidMain, pidCom;
     signal(SIGINT,fermeture);
 
@@ -39,17 +39,17 @@ int main() {
 
     while (1) {
         //Main travail
-        kill(pidMain, SIGCONT);
+        //kill(pidMain, SIGCONT);
         usleep(300000);
-        kill(pidMain, SIGSTOP);
+        //kill(pidMain, SIGSTOP);
         // Com travail
-        kill(pidCom, SIGCONT);
+        //kill(pidCom, SIGCONT);
         usleep(300000);
-        kill(pidCom, SIGSTOP);
+        //kill(pidCom, SIGSTOP);
         // Controle travail
-        kill(pidCtrl, SIGCONT);
+        //kill(pidCtrl, SIGCONT);
         usleep(300000);
-        kill(pidCtrl, SIGSTOP);
+        //kill(pidCtrl, SIGSTOP);
     }
 }
 
@@ -63,7 +63,7 @@ int principal() {
     fdd = open("pipes/demande", O_RDONLY);
     fdr = open("pipes/recu", O_WRONLY);
     if (fdr == -1 || fdd == -1) puts("erreur pipes");
-    while((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
+    if((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
@@ -75,6 +75,7 @@ int principal() {
         devant++;
         if (devant > derriere) devant = derriere = -1;
         // Envoie la commande
+        printf("écrit : %s\n", reponse);
         write(fdr, reponse, 500);
     }
     close(fdd);

@@ -22,13 +22,6 @@ typedef struct {
     char nom[50];
 } Tireuse;
 
-typedef struct {
-    int socket;
-    int fdd;
-    int fdr;
-} ArgComm;
-
-
 int principal(); // Programme main
 void ajout(int valeur); // Ajout dans l'ordonnanceur
 char* traiter(); // Traiter client dans l'ordonnanceur
