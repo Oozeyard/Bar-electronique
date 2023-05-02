@@ -53,7 +53,7 @@ int traiter(int sock) {
     // écrit la demande
     write(sock , message , strlen(message)+1);
     // lit la réponse
-    memset(reponse,0,200); // Vide la variable reponse
+    memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
     read(sock, reponse, 200);
     printf("%s\n", reponse);
 
