@@ -14,7 +14,7 @@ public class Commande extends UnicastRemoteObject {
     static boolean running = true;
     public static void main(String[] args) throws IOException{
         Scanner scanner = new Scanner(System.in);
-
+        String adresse = args[0];
         try{
             DatagramSocket socket = new DatagramSocket(port);//creation socket controle->commande
             DatagramPacket message = new DatagramPacket(bufferIn, buffer.length);//creation packet reçu
@@ -60,7 +60,7 @@ public class Commande extends UnicastRemoteObject {
             int clientPort = message.getPort();
             int typeBiere = Integer.parseInt(new String(message.getData(), 0, message.getLength()));
                 try {//relier le stub (réference locale) de l'interface à l'objet implémenté chez fournisseur
-                    IBiere stub = (IBiere)Naming.lookup("rmi://localhost:2020/Fournisseur");
+                    IBiere stub = (IBiere)Naming.lookup("rmi://"+adresse+":2020/Fournisseur");
                     switch(typeBiere){
                         case 1:
                             System.out.println("Voici la liste de nos bières Ambrées:");

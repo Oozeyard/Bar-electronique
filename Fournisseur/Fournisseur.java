@@ -66,11 +66,12 @@ public class Fournisseur extends UnicastRemoteObject implements IBiere {
 
 
     public static void main(String argv[]) {
-
+        String adresse = argv[0];
         Fournisseur fournisseur = null;
         try {
-            fournisseur = new Fournisseur();
+            System.setProperty("java.rmi.server.hostname",adresse);
             LocateRegistry.createRegistry(2020);
+            fournisseur = new Fournisseur();
             Naming.rebind("rmi://localhost:2020/Fournisseur", fournisseur);
 
         } catch (Exception ex) {
