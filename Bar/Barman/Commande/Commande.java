@@ -9,10 +9,9 @@ public class Commande extends UnicastRemoteObject {
     }
     final static int port = 1909;
     final static int taille = 1024;
-    static byte buffer[] = new byte[taille];
-    static byte bufferIn[] = new byte[taille];
+    static byte[] buffer = new byte[taille];
+    static byte[] bufferIn = new byte[taille];
     static boolean running = true;
-    static byte[] color;
     public static void main(String[] args) throws IOException{
         Scanner scanner = new Scanner(System.in);
 
@@ -48,7 +47,7 @@ public class Commande extends UnicastRemoteObject {
                                                                             ⠀⠀⢸⣿⣤⣤⣤⣤⣤⣤⣤⣤⣤⣼⡇⢸⣧⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿⡇⠀⠀
                                                                             ⠀⠀⢸⣷⣤⣤⣤⣤⣤⣤⣤⣤⣤⣼⡇⢸⣧⣤⣤⣤⣤⣤⣤⣤⣤⣤⣾⡇⠀⠀
                                                                             ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                    
+                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                   \s
                                         """;
             System.out.println(greeting);
 
