@@ -39,23 +39,23 @@ int main() {
 
     while (1) {
         //Main travail
-        //kill(pidMain, SIGCONT);
+        kill(pidMain, SIGCONT);
         usleep(300000);
-        //kill(pidMain, SIGSTOP);
+        kill(pidMain, SIGSTOP);
         // Com travail
-        //kill(pidCom, SIGCONT);
+        kill(pidCom, SIGCONT);
         usleep(300000);
-        //kill(pidCom, SIGSTOP);
+        kill(pidCom, SIGSTOP);
         // Controle travail
-        //kill(pidCtrl, SIGCONT);
+        kill(pidCtrl, SIGCONT);
         usleep(300000);
-        //kill(pidCtrl, SIGSTOP);
+        kill(pidCtrl, SIGSTOP);
     }
 }
 
 int principal() {
     int fdd, fdr;
-    char buffer[1];
+    char buffer[2];
     int valeur;
     char* reponse;
 
@@ -63,7 +63,7 @@ int principal() {
     fdd = open("pipes/demande", O_RDONLY);
     fdr = open("pipes/recu", O_WRONLY);
     if (fdr == -1 || fdd == -1) puts("erreur pipes");
-    if((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
+    if((read(fdd, buffer, 2)) > 0) { // Lecture du pipe
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0); // Si buffer est contient un char alors il retourne 0
         // Ajout la demande dans l'ordonnanceur

@@ -3,30 +3,26 @@
 void *Handler(void *arg) {
     puts("serveur s'occupe du client");
     // récupère la socket service
-    int sock = *(int*) arg;
-    int fd;
+    Argthread args = *(Argthread*) arg;
     char message[200];
-    char reponse[200];
+    char reponse[500];
 
     strncpy(message, "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n", 200);
-    write(sock , message , strlen(message)+1);
+    write(args.sock , message , strlen(message)+1);
 
-    read(sock, reponse, 2);
+    read(args.sock, reponse, 2);
     printf("demande client : %s\n", reponse);
-    
+
     // Envoie la demande au Main
-    fd = open("pipes/demande", O_WRONLY);
-    if (write(fd, reponse, 2) < 0) printf("write fdd: %s\n", strerror(errno));
-    close(fd);
+    if (write(args.fdd, reponse, 2) < 0) printf("write fdd: %s\n", strerror(errno));
 
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
-    fd = open("pipes/recu", O_RDONLY);
-    if (read(fd, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
+    if (read(args.fdr, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
         printf("reponse : %s\n", reponse);
-        write(sock, reponse, sizeof(reponse));
+        write(args.sock, reponse, sizeof(reponse));
     }
-    close(fd);
-    close(sock);
+
+    close(args.sock);
 }
 
 int socketTCP() {
@@ -69,11 +65,16 @@ int communication(int sock) {
     listen(sock , 3);
     c = sizeof(struct sockaddr_in);
 	pthread_t thread_id;
+
+    Argthread args;
 	
+    args.fdd = open("pipes/demande", O_WRONLY);
+    args.fdr = open("pipes/recu", O_RDONLY);
     // Lorsqu'une connection est accepté le processus crée un thread avec la socket client en arg
     while((client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c))) {
         puts("Connection accepté");
-        if( pthread_create(&thread_id, NULL,  Handler, (void*) &client_sock) < 0) {
+        args.sock = client_sock;
+        if( pthread_create(&thread_id, NULL,  Handler, (void*) &args) < 0) {
             perror("erreur thread");
             return 1;
         }
@@ -84,6 +85,8 @@ int communication(int sock) {
         return 1;
     }
     
+    close(args.fdd);
+    close(args.fdr);
     close(sock);
     return 0;
 }
