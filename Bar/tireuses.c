@@ -1,6 +1,6 @@
 #include "Barman/Barman.h"
 
-int tireuse() {
+void tireuse() {
     int shmidb, shmida;
     key_t keyb = 5, keya = 6;
     Tireuse* blonde;
@@ -22,6 +22,4 @@ int tireuse() {
     strncpy(ambree->nom, "null", 50);
     strncpy(blonde->type, "blonde", 50);
     strncpy(ambree->type, "ambree", 50);
-
-    return 1;
 }

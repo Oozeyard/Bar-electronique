@@ -29,4 +29,4 @@ int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
 static void fermeture(int sig); // Programme interruption
 void controle(); // Programme controle
-int tireuse(); // Programme tireuse
+void tireuse(); // Programme tireuse

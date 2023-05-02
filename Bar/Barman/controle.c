@@ -20,10 +20,10 @@ void controle() {
     Tireuse* blonde;
     Tireuse* ambree;
 
-    shmidb = shmget(keyb, sizeof(Tireuse), IPC_CREAT | 0666);
+    shmidb = shmget(keyb, sizeof(Tireuse), 0);
     blonde = (Tireuse*) shmat(shmidb, NULL, 0);
 
-    shmida = shmget(keya, sizeof(Tireuse), IPC_CREAT | 0666);
+    shmida = shmget(keya, sizeof(Tireuse), 0);
     ambree = (Tireuse*) shmat(shmida, NULL, 0);
 
     while(1) {

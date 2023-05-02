@@ -16,9 +16,8 @@ int main() {
 
     if ((pidCtrl = fork()) == 0) {
         // Code processus Controle
-        tireuse();
+        tireuse(); // Initialisation de la SHM
         while (1) {
-            //kill(pidCtrl, SIGSTOP);
             controle();
         }
     }
@@ -26,20 +25,18 @@ int main() {
         // Code processus Main
 
         while (1) {
-            //kill(pidMain, SIGSTOP);
             principal(); 
         }
     }
     else if ((pidCom = fork()) == 0) {
         // Code processus Communication
 
-        int socket = socketTCP();
+        int socket = socketTCP(); // Création de la socket TCP
         while (1) {
-            //kill(pidCom, SIGSTOP);
             communication(socket);
         }
     }
-    
+
     while (1) {
         //Main travail
         //kill(pidMain, SIGCONT);
@@ -64,7 +61,8 @@ int principal() {
 
     // Ouvre pipe
     fd = open("pipes/demande", O_RDONLY);
-    if((read(fd, buffer, 1)) > 0) { // >0 EOF
+    if((read(fd, buffer, 1)) > 0) { // Lecture du pipe
+        puts("read");
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
@@ -83,7 +81,7 @@ int principal() {
     return 1;
 }
 
-void ajout(int valeur) {
+void ajout(int valeur) { // Ajout du client dans la queue
     if (derriere == TAILLEMAX - 1) puts("Ordonnanceur remplis");
     else {
         if (devant == -1) devant = 0;
