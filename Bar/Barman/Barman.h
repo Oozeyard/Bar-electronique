@@ -27,7 +27,6 @@ void ajout(int valeur); // Ajout dans l'ordonnanceur
 char* traiter(); // Traiter client dans l'ordonnanceur
 int communication(); // Programme Communication
 int socketTCP(); // Création socket TCP
-int socketUDP(); // Création socket UDP
-int fermeture(); // Programme Sécurite
+static void fermeture(int sig); // Programme interruption
 void controle(); // Programme controle
 int tireuse(); // Programme tireuse
