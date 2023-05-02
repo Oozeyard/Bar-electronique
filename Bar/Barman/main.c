@@ -40,29 +40,30 @@ int main() {
     while (1) {
         //Main travail
         //kill(pidMain, SIGCONT);
-        sleep(1);
+        usleep(300000);
         //kill(pidMain, SIGSTOP);
         // Com travail
         //kill(pidCom, SIGCONT);
-        sleep(1);
+        usleep(300000);
         //kill(pidCom, SIGSTOP);
         // Controle travail
         //kill(pidCtrl, SIGCONT);
-        sleep(1);
+        usleep(300000);
         //kill(pidCtrl, SIGSTOP);
     }
 }
 
 int principal() {
-    int fd;
+    int fdd, fdr;
     char buffer[1];
     int valeur;
     char* reponse;
 
     // Ouvre pipe
-    fd = open("pipes/demande", O_RDONLY);
-    if((read(fd, buffer, 1)) > 0) { // Lecture du pipe
-        puts("read");
+    fdd = open("pipes/demande", O_RDONLY);
+    fdr = open("pipes/recu", O_WRONLY);
+    if (fdr == -1 || fdd == -1) puts("erreur pipes");
+    if((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
@@ -74,10 +75,11 @@ int principal() {
         devant++;
         if (devant > derriere) devant = derriere = -1;
         // Envoie la commande
-        fd = open("pipes/recu", O_WRONLY);
-        write(fd, reponse, 500);
+        printf("écrit : %s\n", reponse);
+        write(fdr, reponse, 500);
     }
-    close(fd);
+    close(fdd);
+    close(fdr);
     return 1;
 }
 

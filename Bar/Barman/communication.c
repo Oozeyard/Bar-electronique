@@ -4,11 +4,11 @@ void *Handler(void *arg) {
     puts("serveur s'occupe du client");
     // récupère la socket service
     int sock = *(int*) arg;
-    char *message;
-    char reponse[200];
     int fd;
+    char message[200];
+    char reponse[200];
 
-    message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
+    strncpy(message, "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n", 200);
     write(sock , message , strlen(message)+1);
 
     read(sock, reponse, 2);
@@ -16,11 +16,10 @@ void *Handler(void *arg) {
     
     // Envoie la demande au Main
     fd = open("pipes/demande", O_WRONLY);
-    if (write(fd, reponse, 1) < 0) puts("erreur écriture");
+    if (write(fd, reponse, 2) < 0) printf("write fdd: %s\n", strerror(errno));
     close(fd);
 
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
-
     fd = open("pipes/recu", O_RDONLY);
     if (read(fd, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
         printf("reponse : %s\n", reponse);
@@ -64,8 +63,7 @@ int communication(int sock) {
 
     int client_sock , c;
     struct sockaddr_in client;
-     
-    
+
     //Listen
     puts("listen");
     listen(sock , 3);
