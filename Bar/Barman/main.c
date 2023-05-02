@@ -3,19 +3,30 @@
 int queue[TAILLEMAX]; // Ordonnanceur FIFO
 int devant = -1, derriere = -1;
 
+static void fermeture(int sig) {
+    printf("fermeture %d\n", getpid());
+    exit(1);
+}
+
 int main() {
     mkfifo("pipes/demande", 0666); // Pipe communication à main
     mkfifo("pipes/recu", 0666); // Pipe main à communication
-    pid_t pidCtrl, pidMain, pidCom, pidScr;
+    pid_t pidCtrl, pidMain, pidCom;
+    signal(SIGINT,fermeture);
+
     if ((pidCtrl = fork()) == 0) {
         // Code processus Controle
         tireuse();
-        controle();
+        while (1) {
+            //kill(pidCtrl, SIGSTOP);
+            controle();
+        }
     }
     else if ((pidMain = fork()) == 0) {
         // Code processus Main
 
         while (1) {
+            //kill(pidMain, SIGSTOP);
             principal(); 
         }
     }
@@ -24,29 +35,24 @@ int main() {
 
         int socket = socketTCP();
         while (1) {
+            //kill(pidCom, SIGSTOP);
             communication(socket);
-        }
-    }
-    else if ((pidScr = fork()) == 0) {
-        // Code processus Sécurité
-        //signal (SIGINT, fermeture());
-        while (1) {
         }
     }
     
     while (1) {
         //Main travail
-        //kill(pidMain, SIGCONT);
+        kill(pidMain, SIGCONT);
         sleep(1);
-        //kill(pidMain, SIGSTOP);
+        kill(pidMain, SIGSTOP);
         // Com travail
-        //kill(pidCom, SIGCONT);
+        kill(pidCom, SIGCONT);
         sleep(1);
-        //kill(pidCom, SIGSTOP);
-        // Sécurité travail
-        //kill(pidScr, SIGCONT);
+        kill(pidCom, SIGSTOP);
+        // Controle travail
+        kill(pidCtrl, SIGCONT);
         sleep(1);
-        //kill(pidScr, SIGSTOP);
+        kill(pidCtrl, SIGSTOP);
     }
 }
 
@@ -55,11 +61,10 @@ int principal() {
     char buffer[1];
     int valeur;
     char* reponse;
-    int n;
 
     // Ouvre pipe
     fd = open("pipes/demande", O_RDONLY);
-    while(n = (read(fd, buffer, 1)) > 0) { // >0 EOF
+    if((read(fd, buffer, 1)) > 0) { // >0 EOF
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
@@ -74,6 +79,7 @@ int principal() {
         fd = open("pipes/recu", O_WRONLY);
         write(fd, reponse, 500);
     }
+    close(fd);
     return 1;
 }
 
@@ -152,5 +158,6 @@ char* traiter() {
             reponse = "demande inconnue";
             break;
         };
+        printf("traitement : %s\n", reponse);
         return reponse;
 }
