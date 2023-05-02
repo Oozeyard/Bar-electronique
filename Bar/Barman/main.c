@@ -63,8 +63,7 @@ int principal() {
     fdd = open("pipes/demande", O_RDONLY);
     fdr = open("pipes/recu", O_WRONLY);
     if (fdr == -1 || fdd == -1) puts("erreur pipes");
-    if((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
-        puts("read");
+    while((read(fdd, buffer, 1)) > 0) { // Lecture du pipe
         // Converstion char* en long
         valeur = strtol(buffer, NULL, 0);
         if(valeur == 0) return 0; // En cas d'erreurs
@@ -76,7 +75,6 @@ int principal() {
         devant++;
         if (devant > derriere) devant = derriere = -1;
         // Envoie la commande
-        printf("reponse main : %s\n", reponse);
         write(fdr, reponse, 500);
     }
     close(fdd);

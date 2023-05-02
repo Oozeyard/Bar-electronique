@@ -10,7 +10,7 @@ void *Handler(void *arg) {
     char *message;
     char reponse[200];
 
-
+    printf("fdr : %d\nfdd : %d\n", fdr, fdd);
     message = "Bienvenue dans le bar, que puis-je vous servir ?\n 1 - Informations \n 2 - Blonde demi \n 3 - Blonde pinte \n 4 - Ambrée demi \n 5 - Ambrée Pinte \n";
     write(sock , message , strlen(message)+1);
 
@@ -21,7 +21,6 @@ void *Handler(void *arg) {
     if (write(fdd, reponse, 1) < 0) printf("write fdd: %s\n", strerror(errno));
 
     memset(reponse,0,sizeof(reponse)); // Vide la variable reponse
-
     if (read(fdr, reponse, sizeof(reponse)) > 0) {; // Attente de la commande
         printf("reponse : %s\n", reponse);
         write(sock, reponse, sizeof(reponse));
